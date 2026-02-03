@@ -84,7 +84,7 @@
     <script>
         function copyDivContent() {
         // 1. Get the text content from the div
-        const content = document.getElementById('contentToCopy').innerHTML;
+        const content = document.getElementById('contentToCopy').innerText;
 
         // 2. Use the Clipboard API to write the text
         navigator.clipboard.writeText(content)
