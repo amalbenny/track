@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Detector</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; max-width: 400px; }
+        span { font-weight: bold; color: #007bff; }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+        button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 4px rgba(0, 123, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="contentToCopy">
+        <h2>Connection Info</h2>
+        <p>IP Address: <span id="ip">Loading...</span></p>
+        <p>Nation: <span id="nation">Loading...</span></p>
+        <p>Browser: <span id="browser">Detecting...</span></p>
+        <p>Operating System: <span id="os">Detecting...</span></p>
+    </div>
+    <button onclick="copyDivContent()">Copy Text</button>
+    <p id="confirmationMessage" style="color: green;"></p>
+    <noscript>Please enable JavaScript to see the details for browser identification.</noscript>
+    <script>
+        // 1. Detect Browser and OS using the Navigator API
+        const userAgent = navigator.userAgent;
+        let browserName = "Unknown";
+        let osName = "Unknown";
+
+        // Simple Browser Detection
+        if (userAgent.includes("Firefox")) browserName = "Mozilla Firefox";
+        else if (userAgent.includes("SamsungBrowser")) browserName = "Samsung Internet Browser";
+        else if (userAgent.includes("Opera") || userAgent.includes("OPR")) browserName = "Opera";
+        else if (userAgent.includes("Trident")) browserName = "Internet Explorer";
+        else if (userAgent.includes("Edge")) browserName = "Microsoft Edge";
+        else if (userAgent.includes("Chrome")) browserName = "Google Chrome";
+        else if (userAgent.includes("Safari")) browserName = "Apple Safari";
+
+        // Simple OS Detection
+        if (userAgent.indexOf("Win") !== -1) osName = "Windows";
+        else if (userAgent.indexOf("Mac") !== -1) osName = "MacOS";
+        else if (userAgent.indexOf("X11") !== -1) osName = "UNIX";
+        else if (userAgent.indexOf("Linux") !== -1) osName = "Linux";
+        else if (userAgent.indexOf("Android") !== -1) osName = "Android";
+        else if (userAgent.indexOf("like Mac") !== -1) osName = "iOS";
+
+        document.getElementById('browser').innerText = browserName;
+        document.getElementById('os').innerText = osName;
+
+        // 2. Fetch IP and Nation using a free JSON API
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('ip').innerText = data.ip;
+                document.getElementById('nation').innerText = data.country_name;
+            })
+            .catch(err => {
+                document.getElementById('ip').innerText = "Blocked by AdBlocker or Network Issue";
+                document.getElementById('nation').innerText = "Unknown";
+            });
+    </script>
+
+    <script>
+        function copyDivContent() {
+        // 1. Get the text content from the div
+        const content = document.getElementById('contentToCopy').innerText;
+
+        // 2. Use the Clipboard API to write the text
+        navigator.clipboard.writeText(content)
+            .then(() => {
+                // Success feedback
+                const messageElement = document.getElementById('confirmationMessage');
+                messageElement.textContent = 'Text copied to clipboard!';
+                setTimeout(() => {
+                    messageElement.textContent = ''; // Clear message after 2 seconds
+                }, 2000);
+            })
+            .catch(err => {
+                // Error handling
+                console.error('Could not copy text: ', err);
+                alert('Failed to copy text. Please try manually.');
+            });
+    }
+
+    </script>
+</body>
+</html>
